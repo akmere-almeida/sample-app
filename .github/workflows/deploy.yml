@@ -54,7 +54,7 @@ jobs:
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
       # 6 Send email with signed APK
       - name: ✨ Send email with APK
-        uses: dawidd6/action-send-mail@@v2
+        uses: dawidd6/action-send-mail@v2
         with:
           server_address: smtp.gmail.com
           server_port: 465
