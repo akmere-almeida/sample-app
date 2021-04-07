@@ -52,15 +52,16 @@ jobs:
         with:
           name: release.apk
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
-#          # 6 Send email with signed APK
-#          - name: ✨ Send email, you star
-#            uses: dawidd6/action-send-mail@v1.3.0
-#            with:
-#              server_address: smtp.gmail.com
-#              server_port: 465
-#              username: ${{ secrets.MAIL_USERNAME }}
-#              password: ${{ secrets.MAIL_PASSWORD }}
-#              subject: Release APK ✨
-#              body: Checkout this new version of my APK
-#              to: ${{ secrets.TO_MAIL_ADDRESS }}
-#              from: ${{ secrets.MAIL_ADDRESS }}
+      # 6 Send email with signed APK
+      - name: ✨ Send email, you star
+        uses: dawidd6/action-send-mail@v1.3.0
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.MAIL_USERNAME }}
+          password: ${{ secrets.MAIL_PASSWORD }}
+          subject: Release APK ✨
+          body: Checkout this new version of my APK
+          to: ${{ secrets.TO_MAIL_ADDRESS }}
+          from: ${{ secrets.FROM_MAIL_ADDRESS }}
+          attachments: ${{steps.sign_app.outputs.signedReleaseFile}}
