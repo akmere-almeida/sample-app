@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+/some_signing_key.jks.base64.txt
