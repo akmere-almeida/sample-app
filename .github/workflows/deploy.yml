@@ -52,7 +52,12 @@ jobs:
         with:
           name: release.apk
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
-      # 6 Send email with signed APK
+      # 6 Zip APK
+      - uses: montudor/action-zip@v0.1.1
+        id: zip_apk
+        with:
+          args: zip -qq -r ${{steps.sign_app.outputs.signedReleaseFile}} ${{steps.sign_app.outputs.signedReleaseFile}}
+      # 7 Send email with signed APK
       - name: ✨ Send email with APK
         uses: dawidd6/action-send-mail@v2
         with:
