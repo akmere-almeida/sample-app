@@ -28,7 +28,7 @@ jobs:
       - name: Decode google-services.json
         env:
           FIREBASE_SECRET: ${{ secrets.FIREBASE_SECRET }}
-        run: echo $FIREBASE_SECRET > google-services.json
+        run: echo $FIREBASE_SECRET > app/google-services.json
 
       # 3 Generate Release APK
       - name: Generate Release APK
@@ -40,7 +40,7 @@ jobs:
         # ID used to access action output
         id: sign_app
         with:
-          releaseDirectory: build/outputs/apk/release
+          releaseDirectory: app/build/outputs/apk/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
