@@ -6,7 +6,8 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main ]
 
@@ -45,21 +46,13 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-      # 6 Zip APK
-      - uses: montudor/action-zip@v0.1.1
-        id: zip_apk
+      # 5 Upload apk to github action
+      - uses: actions/upload-artifact@master
         with:
-          args: zip -qq -r release.zip ${{steps.sign_app.outputs.signedReleaseFile}}
-      # 7 Send email with signed APK
-      - name: ✨ Send email with APK
-        uses: dawidd6/action-send-mail@v2
+          name: release.apk
+          path: ${{steps.sign_app.outputs.signedReleaseFile}}
+      # 6 Upload mapping file to github action
+      - uses: actions/upload-artifact@master
         with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          username: ${{ secrets.MAIL_USERNAME }}
-          password: ${{ secrets.MAIL_PASSWORD }}
-          subject: Release APK ✨
-          body: Checkout this new version of my APK
-          to: ${{ secrets.TO_MAIL_ADDRESS }}
-          from: ${{ secrets.FROM_MAIL_ADDRESS }}
-          attachments: release.zip
+          name: mapping.txt
+          path: app/build/outputs/mapping/release/mapping.txt
