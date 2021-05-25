@@ -2,8 +2,27 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
-apply plugin: 'com.google.gms.google-services'
 
+def LIB_VERSION = System.getenv("LIB_VERSION")
+private boolean hasLibraryProject() {
+    boolean hasProject = findProject("${rootProject.projectDir}/sample-library") != null ||
+            findProject("${rootProject.projectDir}/sample-library/mylibrary") != null
+
+    println(hasProject.toString())
+    return hasProject
+}
+
+private String libraryProject() {
+    if (findProject(':sample-library')) {
+        println("Sample Library Found")
+        return ':samplelibrary'
+    } else if (findProject(':sample-library:mylibrary')) {
+        println("Sample Library mylibrary found")
+        return ':sample-library:mylibrary'
+    } else{
+        println("Sample Library not Found")
+    }
+}
 
 android {
     compileSdkVersion 30
@@ -17,6 +36,24 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions "projectLocation"
+
+    productFlavors {
+        if (hasLibraryProject()) {
+            println("Has Library 44")
+
+            withLocalProject {
+                versionName "sample.withLocalProject.$LIB_VERSION"
+                dimension "projectLocation"
+                isDefault.set(true)
+            }
+        }
+        withExternalLib {
+            versionName "sample.$LIB_VERSION"
+            dimension "projectLocation"
+        }
     }
 
     buildTypes {
@@ -34,9 +71,31 @@ android {
     }
 }
 
+configurations {
+    if (hasLibraryProject()) {
+        withLocalProjectImplementation
+    }
+
+    withExternalLibImplementation
+}
+
+repositories {
+    maven {
+        url 'https://samplelibrary.jfrog.io/artifactory/sample'
+        credentials {
+            username = System.getenv("LOCAL_ARTIFACTORY_USER") // The publisher user name
+
+            password = System.getenv("LOCAL_ARTIFACTORY_PASSWORD") // The publisher password
+        }
+    }
+}
+
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:26.8.0')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    if (hasLibraryProject()) {
+        withLocalProjectImplementation(project(path: libraryProject()))
+    } else {
+        withExternalLibImplementation("com.akmere.sample_library:mylibrary:$LIB_VERSION")
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.2.0'
